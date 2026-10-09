@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sekretaris Direksi - AI Assistant</title>
+    <style>
+        :root {
+            --bg: #090a0f;
+            --card-bg: #12151e;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --cyan: #00f0ff;
+            --pink: #ff007f;
+            --yellow: #facc15;
+            --border: #1e293b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); padding: 20px 15px; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        header, section, footer { margin-bottom: 30px; }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(0,240,255,0.05) 0%, rgba(255,0,127,0.05) 100%), var(--card-bg);
+            border: 1px solid var(--cyan);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        .avatar {
+            width: 80px; height: 80px;
+            background: #000;
+            border: 2px solid var(--cyan);
+            color: var(--cyan);
+            font-size: 32px; font-weight: bold;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 0 10px var(--cyan);
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+            font-size: 0.85rem; font-weight: bold;
+            padding: 4px 12px; border-radius: 20px; margin-bottom: 15px;
+            text-shadow: 0 0 5px var(--cyan);
+        }
+
+        .hero h1 { font-size: 2.2rem; margin-bottom: 10px; color: #fff; text-shadow: 0 0 8px var(--cyan); }
+        .hero p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+        .section-title {
+            text-align: center; font-size: 1.5rem; margin-bottom: 20px; color: var(--pink); text-shadow: 0 0 5px var(--pink);
+        }
+
+        /* Problem & Solution */
+        .grid-2 { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr 1fr; }
+            .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+        }
+
+        .card-chaos {
+            background: rgba(255, 0, 127, 0.05);
+            border: 1px solid var(--pink);
+            padding: 20px; border-radius: 8px;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.1);
+        }
+        .card-chaos h3 { color: var(--pink); margin-bottom: 10px; }
+        .card-chaos ul { list-style-position: inside; color: #fda4af; }
+
+        .card-solution {
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid var(--cyan);
+            padding: 20px; border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+        }
+        .card-solution h3 { color: var(--cyan); margin-bottom: 10px; }
+        .card-solution ul { list-style-position: inside; color: #a5f3fc; }
+
+        /* Capabilities */
+        .grid-3 { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .feature-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            padding: 20px; border-radius: 8px; text-align: center;
+            transition: border 0.3s;
+        }
+        .feature-card:hover { border-color: var(--yellow); }
+        .feature-icon { font-size: 2rem; margin-bottom: 10px; }
+        .feature-card h4 { color: #fff; margin-bottom: 8px; }
+        .feature-card p { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* Simulation Box */
+        .chat-box {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 8px; padding: 20px;
+        }
+        .sim-buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        .sim-btn {
+            background: transparent; color: var(--cyan);
+            border: 1px solid var(--cyan); padding: 8px 12px;
+            border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold;
+            transition: all 0.2s;
+        }
+        .sim-btn:hover { background: var(--cyan); color: #000; box-shadow: 0 0 10px var(--cyan); }
+
+        .chat-display {
+            background: #000; border: 1px solid var(--border);
+            border-radius: 6px; padding: 15px; min-height: 120px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .msg { max-width: 80%; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; }
+        .msg-user { background: var(--pink); color: #fff; align-self: flex-end; }
+        .msg-ai { background: #1e293b; color: var(--cyan); border: 1px solid var(--cyan); align-self: flex-start; }
+        .typing { font-style: italic; color: var(--yellow); font-size: 0.85rem; }
+
+        /* Footer & CTA */
+        footer { text-align: center; padding-top: 20px; border-top: 1px solid var(--border); }
+        .cta-btn {
+            display: inline-block; background: var(--cyan); color: #000;
+            text-decoration: none; padding: 12px 24px; border-radius: 6px;
+            font-weight: bold; margin-bottom: 15px; text-transform: uppercase;
+            box-shadow: 0 0 15px var(--cyan); transition: all 0.2s;
+        }
+        .cta-btn:hover { background: #fff; box-shadow: 0 0 20px #fff; }
+        .footer-text { color: var(--text-muted); font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 1. HERO SECTION -->
+        <header class="hero">
+            <div class="avatar">SD</div>
+            <span class="badge">🟢 Status: Active & Ready 24/7</span>
+            <h1>Sekretaris Direksi</h1>
+            <p>Sistem AI pintar untuk mengelola seluruh jadwal Direktur Utama secara otomatis dan presisi.</p>
+        </header>
+
+        <!-- 2. PROBLEM & SOLUTION CARD -->
+        <section>
+            <h2 class="section-title">// THE CHAOS VS THE SOLUTION</h2>
+            <div class="grid-2">
+                <div class="card-chaos">
+                    <h3>The Chaos</h3>
+                    <ul>
+                        <li>Lupa agenda rapat & butuh pengingat otomatis.</li>
+                        <li>Minutes of Meeting (MoM) lambat dan terlalu panjang.</li>
+                        <li>Tindak lanjut dari MoM sering terlewat / tidak tercatat.</li>
+                    </ul>
+                </div>
+                <div class="card-solution">
+                    <h3>The Solution</h3>
+                    <ul>
+                        <li>Pencatatan agenda otomatis & reminder presisi.</li>
+                        <li>Generasi MoM ringkas, padat, dan to-the-point.</li>
+                        <li>Konversi otomatis hasil MoM menjadi Google Tasks.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. CORE CAPABILITIES -->
+        <section>
+            <h2 class="section-title">// CORE CAPABILITIES</h2>
+            <div class="grid-3">
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h4>Google Calendar</h4>
+                    <p>Menjadwalkan agenda baru dan mengirimkan pengingat tepat waktu secara otomatis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h4>Google Tasks</h4>
+                    <p>Membuat daftar aksi tindak lanjut dari hasil MoM langsung ke sistem tugas.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📹</div>
+                    <h4>Google Meet</h4>
+                    <p>Mengintegrasikan ruang rapat virtual langsung dalam setiap jadwal agenda.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. INTERACTIVE SIMULATION -->
+        <section>
+            <h2 class="section-title">// INTERACTIVE SIMULATION</h2>
+            <div class="chat-box">
+                <p style="margin-bottom: 10px; font-size: 0.9rem; color: var(--text-muted);">Pilih instruksi untuk menguji AI Assistant:</p>
+                <div class="sim-buttons">
+                    <button class="sim-btn" onclick="runSim('jadwal')">1. Buat Jadwal & Meet</button>
+                    <button class="sim-btn" onclick="runSim('mom')">2. Ringkas MoM Rapat</button>
+                    <button class="sim-btn" onclick="runSim('task')">3. Bikin Aksi Tindak Lanjut</button>
+                </div>
+                <div class="chat-display" id="chatDisplay">
+                    <div class="msg msg-ai">System Ready. Pilih skenario di atas untuk memulai instruksi.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. FOOTER & CTA -->
+        <footer>
+            <a href="https://wa.me/62815851788" target="_blank" class="cta-btn">Hubungi via WhatsApp</a>
+            <p class="footer-text">Built with AI · AI Builder Bootcamp Showcase</p>
+        </footer>
+    </div>
+
+    <script>
+        const scenarios = {
+            jadwal: {
+                user: "Jadwalkan rapat direksi besok jam 09.00 pagi.",
+                ai: "Jadwal 'Rapat Direksi' berhasil ditambahkan ke Google Calendar untuk besok pukul 09.00 WIB. Tautan Google Meet telah dibuat dan reminder diaktifkan."
+            },
+            mom: {
+                user: "Buatkan ringkasan MoM dari rapat koordinasi tadi.",
+                ai: "MoM berhasil diringkas secara singkat: 1) Evaluasi target Q3, 2) Alokasi anggaran tim IT. Dokumen siap dikirimkan."
+            },
+            task: {
+                user: "Buatkan aksi tindak lanjut dari poin MoM tadi.",
+                ai: "3 Aksi tindak lanjut telah berhasil dibuat dan didaftarkan langsung ke Google Tasks lengkap dengan tenggat waktunya."
+            }
+        };
+
+        function runSim(key) {
+            const display = document.getElementById('chatDisplay');
+            const data = scenarios[key];
+            
+            display.innerHTML = `<div class="msg msg-user">${data.user}</div>`;
+            
+            const typing = document.createElement('div');
+            typing.className = 'typing';
+            typing.innerText = 'Sekretaris Direksi sedang memproses data...';
+            display.appendChild(typing);
+
+            setTimeout(() => {
+                typing.remove();
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'msg msg-ai';
+                aiMsg.innerText = data.ai;
+                display.appendChild(aiMsg);
+            }, 800);
+        }
+    </script>
+</body>
+</html>
