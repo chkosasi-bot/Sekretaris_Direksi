@@ -433,8 +433,21 @@
                 </table>
             </div>
         </section>
-
-        <!-- 6. FOOTER & CTA -->
+        
+         <!-- 6. NEWS DATABASE SECTION -->
+        <section>
+            <h2 class="section-title">// DATA BERITA / NEWS</h2>
+            <div class="table-container">
+                <table id="news">
+                  <thead>
+                    <tr><th>Judul</th><th>Kategori</th><th>Tanggal</th><th>Sumber</th><th>Link</th></tr>
+                  </thead>
+                  <tbody><tr><td colspan="5">Memuat data...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- 7. FOOTER & CTA -->
         <footer>
             <a href="https://wa.me/62815851788" target="_blank" class="cta-btn">Hubungi via WhatsApp</a>
             <p class="footer-text">Built with AI · AI Builder Bootcamp Showcase</p>
@@ -637,9 +650,51 @@
             console.error(e);
           }
         }
+        async function loadNews() {
+          const tbody = document.querySelector('#news tbody');
+          try {
+            const res = await fetch(
+              SUPABASE_URL + '/rest/v1/news?select=*&order=created_at.desc&limit=50',
+              { headers: { apikey: SUPABASE_KEY } }
+            );
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const rows = await res.json();
+
+            tbody.replaceChildren();
+            for (const item of rows) {
+              const tr = document.createElement('tr');
+              
+              for (const v of [item.title, item.category, item.published_at, item.source]) {
+                const td = document.createElement('td');
+                td.textContent = v ?? '-';
+                tr.appendChild(td);
+              }
+
+              const td = document.createElement('td');
+              if (item.url && item.url.startsWith('https://')) {
+                const a = document.createElement('a');
+                a.href = item.url;
+                a.target = '_blank';
+                a.rel = 'noopener';
+                a.textContent = 'Baca';
+                td.appendChild(a);
+              } else {
+                td.textContent = '-';
+              }
+              tr.appendChild(td);
+              
+              tbody.appendChild(tr);
+            }
+            if (!rows.length) tbody.innerHTML = '<tr><td colspan="5">Belum ada data berita.</td></tr>';
+          } catch (e) {
+            tbody.innerHTML = '<tr><td colspan="5">Gagal memuat data berita.</td></tr>';
+            console.error(e);
+          }
+        }
 
         window.onload = function() {
             loadPlaces();
+            loadNews();
             gapiLoaded();
             gisLoaded();
         };
