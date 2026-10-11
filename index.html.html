@@ -651,11 +651,11 @@
           }
         }
 
-        async function loadNews() {
+async function loadNews() {
   const tbody = document.querySelector('#news tbody');
   try {
     const res = await fetch(
-      SUPABASE_URL + '/rest/v1/news?select=title,metadata,keyword,source,url&order=created_at.desc&limit=50',
+      SUPABASE_URL + '/rest/v1/news?select=title,metadata,keyword,source,url,created_at&order=created_at.desc&limit=50',
       { headers: { apikey: SUPABASE_KEY } }
     );
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -664,26 +664,31 @@
     tbody.replaceChildren();
     for (const item of rows) {
       const tr = document.createElement('tr');
-      
-      // Ambil nilai keyword dari kolom 'keyword' atau dari dalam JSON 'metadata.keyword'
+
       const keywordValue = item.keyword || item.metadata?.keyword || (typeof item.metadata === 'string' ? item.metadata : null);
 
-      // 1. Kolom Judul (title)
+      // 1. Judul
       const tdTitle = document.createElement('td');
       tdTitle.textContent = item.title ?? '-';
       tr.appendChild(tdTitle);
 
-      // 2. Kolom Metadata / Keyword
+      // 2. Kategori
       const tdKeyword = document.createElement('td');
       tdKeyword.textContent = keywordValue ?? '-';
       tr.appendChild(tdKeyword);
 
-      // 3. Kolom Sumber (source)
+      // 3. Tanggal (Ditambahkan agar sesuai dengan header)
+      const tdDate = document.createElement('td');
+      const rawDate = item.created_at || item.metadata?.date;
+      tdDate.textContent = rawDate ? new Date(rawDate).toLocaleDateString('id-ID') : '-';
+      tr.appendChild(tdDate);
+
+      // 4. Sumber
       const tdSource = document.createElement('td');
       tdSource.textContent = item.source ?? '-';
       tr.appendChild(tdSource);
 
-      // 4. Kolom Link / URL (url)
+      // 5. Link
       const tdUrl = document.createElement('td');
       if (item.url && item.url.startsWith('https://')) {
         const a = document.createElement('a');
@@ -696,12 +701,14 @@
         tdUrl.textContent = '-';
       }
       tr.appendChild(tdUrl);
-      
+
       tbody.appendChild(tr);
     }
-    if (!rows.length) tbody.innerHTML = '<tr><td colspan="4">Belum ada data berita.</td></tr>';
+    // Ubah colspan menjadi 5
+    if (!rows.length) tbody.innerHTML = '<tr><td colspan="5">Belum ada data berita.</td></tr>';
   } catch (e) {
-    tbody.innerHTML = '<tr><td colspan="4">Gagal memuat data berita.</td></tr>';
+    // Ubah colspan menjadi 5
+    tbody.innerHTML = '<tr><td colspan="5">Gagal memuat data berita.</td></tr>';
     console.error(e);
   }
 }
