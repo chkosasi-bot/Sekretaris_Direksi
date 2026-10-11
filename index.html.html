@@ -654,8 +654,9 @@
 async function loadNews() {
   const tbody = document.querySelector('#news tbody');
   try {
+    // Meminta kolom yang sesuai persis dengan tabel Supabase
     const res = await fetch(
-      SUPABASE_URL + '/rest/v1/news?select=title,metadata,keyword,source,url,created_at&order=created_at.desc&limit=50',
+      SUPABASE_URL + '/rest/v1/news?select=title,metadata/keyword,publishedAt,source,url&order=publishedAt.desc&limit=50',
       { headers: { apikey: SUPABASE_KEY } }
     );
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -665,32 +666,36 @@ async function loadNews() {
     for (const item of rows) {
       const tr = document.createElement('tr');
 
-      const keywordValue = item.keyword || item.metadata?.keyword || (typeof item.metadata === 'string' ? item.metadata : null);
-
-      // 1. Judul
+      // 1. Kolom Judul (title)
       const tdTitle = document.createElement('td');
       tdTitle.textContent = item.title ?? '-';
       tr.appendChild(tdTitle);
 
-      // 2. Kategori
+      // 2. Kolom Kategori (metadata/keyword)
       const tdKeyword = document.createElement('td');
-      tdKeyword.textContent = keywordValue ?? '-';
+      tdKeyword.textContent = item['metadata/keyword'] ?? '-';
       tr.appendChild(tdKeyword);
 
-      // 3. Tanggal (Ditambahkan agar sesuai dengan header)
+      // 3. Kolom Tanggal (publishedAt)
       const tdDate = document.createElement('td');
-      const rawDate = item.created_at || item.metadata?.date;
-      tdDate.textContent = rawDate ? new Date(rawDate).toLocaleDateString('id-ID') : '-';
+      const rawDate = item.publishedAt;
+      tdDate.textContent = rawDate ? new Date(rawDate).toLocaleDateString('id-ID', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }) : '-';
       tr.appendChild(tdDate);
 
-      // 4. Sumber
+      // 4. Kolom Sumber (source)
       const tdSource = document.createElement('td');
       tdSource.textContent = item.source ?? '-';
       tr.appendChild(tdSource);
 
-      // 5. Link
+      // 5. Kolom Link / URL (url)
       const tdUrl = document.createElement('td');
-      if (item.url && item.url.startsWith('https://')) {
+      if (item.url && (item.url.startsWith('http://') || item.url.startsWith('https://'))) {
         const a = document.createElement('a');
         a.href = item.url;
         a.target = '_blank';
@@ -704,10 +709,9 @@ async function loadNews() {
 
       tbody.appendChild(tr);
     }
-    // Ubah colspan menjadi 5
+
     if (!rows.length) tbody.innerHTML = '<tr><td colspan="5">Belum ada data berita.</td></tr>';
   } catch (e) {
-    // Ubah colspan menjadi 5
     tbody.innerHTML = '<tr><td colspan="5">Gagal memuat data berita.</td></tr>';
     console.error(e);
   }
