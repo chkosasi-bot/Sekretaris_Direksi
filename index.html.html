@@ -650,48 +650,62 @@
             console.error(e);
           }
         }
+
         async function loadNews() {
-          const tbody = document.querySelector('#news tbody');
-          try {
-            const res = await fetch(
-              SUPABASE_URL + '/rest/v1/news?select=*&order=created_at.desc&limit=50',
-              { headers: { apikey: SUPABASE_KEY } }
-            );
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const rows = await res.json();
+  const tbody = document.querySelector('#news tbody');
+  try {
+    const res = await fetch(
+      SUPABASE_URL + '/rest/v1/news?select=title,metadata,keyword,source,url&order=created_at.desc&limit=50',
+      { headers: { apikey: SUPABASE_KEY } }
+    );
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const rows = await res.json();
 
-            tbody.replaceChildren();
-            for (const item of rows) {
-              const tr = document.createElement('tr');
-              
-              for (const v of [item.title, item.metadata, item.source, item.url]) {
-                const td = document.createElement('td');
-                td.textContent = v ?? '-';
-                tr.appendChild(td);
-              }
+    tbody.replaceChildren();
+    for (const item of rows) {
+      const tr = document.createElement('tr');
+      
+      // Ambil nilai keyword dari kolom 'keyword' atau dari dalam JSON 'metadata.keyword'
+      const keywordValue = item.keyword || item.metadata?.keyword || (typeof item.metadata === 'string' ? item.metadata : null);
 
-              const td = document.createElement('td');
-              if (item.url && item.url.startsWith('https://')) {
-                const a = document.createElement('a');
-                a.href = item.url;
-                a.target = '_blank';
-                a.rel = 'noopener';
-                a.textContent = 'Baca';
-                td.appendChild(a);
-              } else {
-                td.textContent = '-';
-              }
-              tr.appendChild(td);
-              
-              tbody.appendChild(tr);
-            }
-            if (!rows.length) tbody.innerHTML = '<tr><td colspan="5">Belum ada data berita.</td></tr>';
-          } catch (e) {
-            tbody.innerHTML = '<tr><td colspan="5">Gagal memuat data berita.</td></tr>';
-            console.error(e);
-          }
-        }
+      // 1. Kolom Judul (title)
+      const tdTitle = document.createElement('td');
+      tdTitle.textContent = item.title ?? '-';
+      tr.appendChild(tdTitle);
 
+      // 2. Kolom Metadata / Keyword
+      const tdKeyword = document.createElement('td');
+      tdKeyword.textContent = keywordValue ?? '-';
+      tr.appendChild(tdKeyword);
+
+      // 3. Kolom Sumber (source)
+      const tdSource = document.createElement('td');
+      tdSource.textContent = item.source ?? '-';
+      tr.appendChild(tdSource);
+
+      // 4. Kolom Link / URL (url)
+      const tdUrl = document.createElement('td');
+      if (item.url && item.url.startsWith('https://')) {
+        const a = document.createElement('a');
+        a.href = item.url;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = 'Baca';
+        tdUrl.appendChild(a);
+      } else {
+        tdUrl.textContent = '-';
+      }
+      tr.appendChild(tdUrl);
+      
+      tbody.appendChild(tr);
+    }
+    if (!rows.length) tbody.innerHTML = '<tr><td colspan="4">Belum ada data berita.</td></tr>';
+  } catch (e) {
+    tbody.innerHTML = '<tr><td colspan="4">Gagal memuat data berita.</td></tr>';
+    console.error(e);
+  }
+}
+        
         window.onload = function() {
             loadPlaces();
             loadNews();
