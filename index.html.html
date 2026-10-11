@@ -324,4 +324,187 @@
                 </a>
 
                 <!-- Google Tasks -->
-                <a href="https://tasks.google.com" target="_blank" rel="noopener noreferrer" class="feature-card" style="text-decoration: none; display:
+                <a href="https://tasks.google.com" target="_blank" rel="noopener noreferrer" class="feature-card" style="text-decoration: none; display: block;">
+                    <div class="feature-icon">✅</div>
+                    <h4>Google Tasks</h4>
+                    <p>Membuat daftar aksi tindak lanjut dari hasil MoM langsung ke sistem tugas.</p>
+                </a>
+
+                <!-- Google Meet -->
+                <a href="https://meet.google.com" target="_blank" rel="noopener noreferrer" class="feature-card" style="text-decoration: none; display: block;">
+                    <div class="feature-icon">📹</div>
+                    <h4>Google Meet</h4>
+                    <p>Mengintegrasikan ruang rapat virtual langsung dalam setiap jadwal agenda.</p>
+                </a>
+            </div>
+        </section>
+       
+        <!-- 4. INTERACTIVE AI SIMULATION -->
+        <section id="simulation" class="simulation-section">
+            <h2 class="section-title">// INTERACTIVE AI SIMULATION</h2>
+            
+            <div class="sim-container">
+                <!-- Panel Input & Perintah -->
+                <div class="sim-controls">
+                    <h3>💬 Ketik Perintah Simulasi:</h3>
+                    <div class="sim-input-group">
+                        <input type="text" id="simInput" placeholder="Contoh: Buatkan rapat pembahasan MoM besok jam 10 pagi..." />
+                        <button onclick="runSimulation()" class="btn-primary">Kirim Perintah</button>
+                    </div>
+
+                    <!-- Quick Action Prompts -->
+                    <div class="quick-prompts">
+                        <small>Coba contoh perintah cepat:</small>
+                        <div class="prompt-chips">
+                            <button onclick="setPrompt('Buat jadwal Rapat Evaluasi Proyek besok jam 09:00 WIB')">📅 Rapat Evaluasi</button>
+                            <button onclick="setPrompt('Tambah tugas: Follow up dokumen MoM ke tim UI/UX')">✅ Tugas Follow Up</button>
+                            <button onclick="setPrompt('Buat Google Meet untuk Sync Harian jam 14:00')">📹 Meet Sync Harian</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel Visualisasi Hasil / Terminal Live Output -->
+                <div class="sim-output-panel">
+                    <div class="sim-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="sim-title">AI Execution Console</span>
+                    </div>
+                    
+                    <div id="simConsole" class="sim-console-body">
+                        <p class="system-msg">🤖 AI Assistant siap. Masukkan perintah di atas untuk menguji simulasi.</p>
+                    </div>
+
+                    <!-- Tempat Menampilkan Card Hasil Eksekusi -->
+                    <div id="simResults" class="sim-results-grid"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. PLACES DATABASE SECTION -->
+        <section>
+            <h2 class="section-title">// DATA LOKASI / PLACES</h2>
+            <div class="table-container">
+                <table id="places">
+                  <thead>
+                    <tr><th>Nama</th><th>Kategori</th><th>Rating</th><th>Review</th><th>Kota</th><th>Telepon</th><th>Maps</th></tr>
+                  </thead>
+                  <tbody><tr><td colspan="7">Memuat data...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 6. FOOTER & CTA -->
+        <footer>
+            <a href="https://wa.me/62815851788" target="_blank" class="cta-btn">Hubungi via WhatsApp</a>
+            <p class="footer-text">Built with AI · AI Builder Bootcamp Showcase</p>
+        </footer>
+    </div>
+
+    <script>
+        function setPrompt(text) {
+            document.getElementById('simInput').value = text;
+        }
+
+        function runSimulation() {
+            const inputField = document.getElementById('simInput');
+            const command = inputField.value.trim();
+            const consoleBody = document.getElementById('simConsole');
+            const resultsGrid = document.getElementById('simResults');
+
+            if (!command) return;
+
+            // Reset atau tampilkan log perintah baru
+            consoleBody.innerHTML += `<p class="user-cmd">> User: "${command}"</p>`;
+            consoleBody.innerHTML += `<p class="ai-status">⏳ [AI Engine]: Menganalisis konteks & mengekstrak entitas...</p>`;
+
+            // Simulasi Delay Proses AI
+            setTimeout(() => {
+                let actionType = 'calendar';
+                let title = 'Jadwal Rapat / Agenda';
+                let detail = 'Berhasil dibuat dan disinkronkan ke Google Calendar.';
+                let icon = '📅';
+
+                const lowerCmd = command.toLowerCase();
+
+                if (lowerCmd.includes('tugas') || lowerCmd.includes('task') || lowerCmd.includes('follow up')) {
+                    actionType = 'task';
+                    title = 'Tugas Google Tasks Baru';
+                    detail = `Item Aksi: "${command}" ditambahkan ke daftar Google Tasks.`;
+                    icon = '✅';
+                } else if (lowerCmd.includes('meet') || lowerCmd.includes('panggilan') || lowerCmd.includes('sync')) {
+                    actionType = 'meet';
+                    title = 'Ruang Google Meet';
+                    detail = 'Link rapat virtual berhasil dibuat & disematkan ke dalam undangan.';
+                    icon = '📹';
+                } else {
+                    title = 'Agenda Google Calendar';
+                    detail = `Jadwal "${command}" telah terpasang di kalender Anda.`;
+                }
+
+                consoleBody.innerHTML += `<p class="ai-success">✅ [Sukses]: Aksi berhasil dieksekusi!</p>`;
+
+                // Buat Hasil Card Interaktif
+                const newCard = document.createElement('div');
+                newCard.className = `result-card ${actionType}`;
+                newCard.innerHTML = `
+                    <h5>${icon} ${title}</h5>
+                    <p>${detail}</p>
+                    <small style="color:#777; font-size:10px;">Status: Active / Synced</small>
+                `;
+                resultsGrid.appendChild(newCard);
+
+                // Clear input & auto scroll console
+                inputField.value = '';
+                consoleBody.scrollTop = consoleBody.scrollHeight;
+            }, 1000);
+        }
+
+        /* SUPABASE PLACES SCRIPT */
+        const SUPABASE_URL = 'https://zczwhahxozeerwpvcnkz.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_XQ4UygrGIPnAQEPJ3hWZSg_O93oHyGn'; 
+
+        async function loadPlaces() {
+          const tbody = document.querySelector('#places tbody');
+          try {
+            const res = await fetch(
+              SUPABASE_URL + '/rest/v1/places?select=*&order=reviews_count.desc.nullslast&limit=100',
+              { headers: { apikey: SUPABASE_KEY } }
+            );
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const rows = await res.json();
+
+            tbody.replaceChildren();
+            for (const p of rows) {
+              const tr = document.createElement('tr');
+              for (const v of [p.title, p.category_name, p.total_score, p.reviews_count, p.city, p.phone]) {
+                const td = document.createElement('td');
+                td.textContent = v ?? '-';
+                tr.appendChild(td);
+              }
+              const td = document.createElement('td');
+              if (p.url && p.url.startsWith('https://')) {
+                const a = document.createElement('a');
+                a.href = p.url;
+                a.target = '_blank';
+                a.rel = 'noopener';
+                a.textContent = 'Buka';
+                td.appendChild(a);
+              }
+              tr.appendChild(td);
+              tbody.appendChild(tr);
+            }
+            if (!rows.length) tbody.innerHTML = '<tr><td colspan="7">Belum ada data.</td></tr>';
+          } catch (e) {
+            tbody.innerHTML = '<tr><td colspan="7">Gagal memuat data.</td></tr>';
+            console.error(e);
+          }
+        }
+
+        window.onload = function() {
+            loadPlaces();
+        };
+    </script>
+</body>
+</html>
