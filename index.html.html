@@ -664,7 +664,7 @@
             for (const item of rows) {
               const tr = document.createElement('tr');
               
-              for (const v of [item.title, item.category, item.published_at, item.source]) {
+              for (const v of [item.title, item.metadata/keyword, item.source, item.url]) {
                 const td = document.createElement('td');
                 td.textContent = v ?? '-';
                 tr.appendChild(td);
